@@ -1,0 +1,20 @@
+{
+  "Path": "/service-role/",
+  "ManagedPolicyArns": [
+    "arn:aws:iam::YOUR_ACCOUNT_ID:policy/service-role/aws-iot-rule-ddb_telemetry-action-1-role-dbb_telemetry"
+  ],
+  "MaxSessionDuration": 3600,
+  "RoleName": "dbb_telemetry",
+  "AssumeRolePolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "iot.amazonaws.com"
+        }
+      }
+    ]
+  }
+}

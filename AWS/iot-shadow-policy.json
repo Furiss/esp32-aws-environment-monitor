@@ -1,0 +1,65 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/get",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/update",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/shadow/get/accepted",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/get/accepted",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/shadow/update/delta",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/update/delta",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/shadow/update/accepted",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/update/accepted",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/shadow/update/rejected",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/update/rejected",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/shadow/get/rejected",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/shadow/get/rejected",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    }
+  ]
+}

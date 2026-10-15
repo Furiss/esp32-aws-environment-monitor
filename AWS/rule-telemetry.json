@@ -1,0 +1,23 @@
+{
+  "ruleDisabled": false,
+  "errorAction": {
+    "cloudwatchLogs": {
+      "batchMode": false,
+      "roleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/service-role/CloudWatch-error-role",
+      "logGroupName": "iot-errors"
+    }
+  },
+  "description": "",
+  "awsIotSqlVersion": "2016-03-23",
+  "actions": [
+    {
+      "dynamoDBv2": {
+        "putItem": {
+          "tableName": "IoT_telemetry"
+        },
+        "roleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/service-role/dbb_telemetry"
+      }
+    }
+  ],
+  "sql": "SELECT *,\r\n       timestamp() AS received_at,\r\n       clientid()  AS client_id,\r\n       topic(2)    AS student\r\nFROM 'iot-course/vlasenko/telemetry'"
+}

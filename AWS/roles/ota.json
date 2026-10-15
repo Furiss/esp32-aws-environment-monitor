@@ -1,0 +1,29 @@
+{
+  "Path": "/service-role/",
+  "ManagedPolicyArns": [
+    "arn:aws:iam::YOUR_ACCOUNT_ID:policy/service-role/aws-iot-role-s3GetObjectVersion_1790850083401"
+  ],
+  "MaxSessionDuration": 3600,
+  "RoleName": "ota",
+  "AssumeRolePolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Condition": {
+          "StringEquals": {
+            "aws:SourceAccount": "YOUR_ACCOUNT_ID"
+          },
+          "ArnLike": {
+            "aws:SourceArn": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:job/*"
+          }
+        },
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "iot.amazonaws.com"
+        },
+        "Sid": "S3PresignUrlDownload"
+      }
+    ]
+  }
+}

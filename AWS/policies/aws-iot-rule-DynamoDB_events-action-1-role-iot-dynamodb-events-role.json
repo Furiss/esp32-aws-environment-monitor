@@ -1,0 +1,8 @@
+{
+  "Version": "2012-10-17",
+  "Statement": {
+    "Resource": "arn:aws:dynamodb:eu-north-1:YOUR_ACCOUNT_ID:table/IoT_Events",
+    "Action": "dynamodb:PutItem",
+    "Effect": "Allow"
+  }
+}

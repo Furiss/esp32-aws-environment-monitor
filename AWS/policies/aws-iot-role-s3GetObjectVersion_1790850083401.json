@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Condition": {
+        "StringEquals": {
+          "s3:ResourceAccount": "YOUR_ACCOUNT_ID"
+        }
+      },
+      "Resource": [
+        "arn:aws:s3:::YOUR_FIRMWARE_BUCKET/*"
+      ],
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Effect": "Allow",
+      "Sid": "S3GetObjects"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/iot-course/vlasenko/telemetry",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/iot-course/vlasenko/events",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:client/ESP32-Vlasenko",
+      "Action": "iot:Connect",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/iot-course/vlasenko/commands/led",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/iot-course/vlasenko/commands/led",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Resource": [
+        "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/iot-course/vlasenko/commands/led",
+        "arn:aws:dynamodb:eu-north-1:YOUR_ACCOUNT_ID:table/IoT_telemetry",
+        "arn:aws:dynamodb:eu-north-1:YOUR_ACCOUNT_ID:table/IoT_Events"
+      ],
+      "Action": [
+        "dynamodb:Query",
+        "iot:Publish"
+      ],
+      "Effect": "Allow",
+      "Sid": "VisualEditor0"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:thing/ESP32-Vlasenko",
+      "Action": "iot:UpdateThingShadow",
+      "Effect": "Allow",
+      "Sid": "VisualEditor1"
+    }
+  ]
+}

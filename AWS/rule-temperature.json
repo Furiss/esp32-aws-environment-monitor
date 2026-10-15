@@ -1,0 +1,22 @@
+{
+  "ruleDisabled": false,
+  "errorAction": {
+    "cloudwatchLogs": {
+      "batchMode": false,
+      "roleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/service-role/CloudWatch-error-role",
+      "logGroupName": "iot-errors"
+    }
+  },
+  "description": "",
+  "awsIotSqlVersion": "2016-03-23",
+  "actions": [
+    {
+      "cloudwatchLogs": {
+        "batchMode": false,
+        "roleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/service-role/iot_cloudwatch_role",
+        "logGroupName": "iot-out-of-range-temperature"
+      }
+    }
+  ],
+  "sql": "SELECT *, timestamp() AS received_at, clientid() AS client_id, topic(2) AS student FROM 'iot-course/vlasenko/telemetry' WHERE temperature > 28 OR temperature < 15"
+}

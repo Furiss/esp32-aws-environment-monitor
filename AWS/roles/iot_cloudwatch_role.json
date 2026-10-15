@@ -1,0 +1,21 @@
+{
+  "Path": "/service-role/",
+  "ManagedPolicyArns": [
+    "arn:aws:iam::YOUR_ACCOUNT_ID:policy/service-role/aws-iot-rule-DynamoDB_events-erroraction-role-iot_cloudwatch_role",
+    "arn:aws:iam::YOUR_ACCOUNT_ID:policy/service-role/aws-iot-rule-out_of_range_temperature-action-1-role-iot_cloudwatch_role"
+  ],
+  "MaxSessionDuration": 3600,
+  "RoleName": "iot_cloudwatch_role",
+  "AssumeRolePolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "iot.amazonaws.com"
+        }
+      }
+    ]
+  }
+}

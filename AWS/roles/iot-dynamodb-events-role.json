@@ -1,0 +1,20 @@
+{
+  "Path": "/service-role/",
+  "ManagedPolicyArns": [
+    "arn:aws:iam::YOUR_ACCOUNT_ID:policy/service-role/aws-iot-rule-DynamoDB_events-action-1-role-iot-dynamodb-events-role"
+  ],
+  "MaxSessionDuration": 3600,
+  "RoleName": "iot-dynamodb-events-role",
+  "AssumeRolePolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "iot.amazonaws.com"
+        }
+      }
+    ]
+  }
+}

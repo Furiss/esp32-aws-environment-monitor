@@ -1,0 +1,9 @@
+.pio/
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+secrets.h
+*.pem
+*.key
+*.crt

@@ -1,0 +1,1010 @@
+{
+  "Resources": {
+    "IAMManagedPolicyPolicyESP32Vlasenkobackendpolicy": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "ESP32-Vlasenko-backend-policy",
+        "Path": "/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/${TopicPrefix}/commands/led"
+                },
+                {
+                  "Fn::GetAtt": [
+                    "DynamoDBTableIoTtelemetry",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "DynamoDBTableIoTEvents",
+                    "Arn"
+                  ]
+                }
+              ],
+              "Action": [
+                "dynamodb:Query",
+                "iot:Publish"
+              ],
+              "Effect": "Allow",
+              "Sid": "VisualEditor0"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:thing/${ThingName}"
+              },
+              "Action": "iot:UpdateThingShadow",
+              "Effect": "Allow",
+              "Sid": "VisualEditor1"
+            }
+          ]
+        }
+      }
+    },
+    "IAMRoleCloudWatcherrorrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureerroractionroleCloudWatcherrorrole"
+          },
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDMeventserroractionroleCloudWatcherrorrole"
+          },
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryerroractionroleCloudWatcherrorrole"
+          }
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "CloudWatch-error-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "IAMRoleOta": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotroles3GetObjectVersion1790850083401"
+          }
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "ota",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:job/*"
+                  }
+                }
+              },
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              },
+              "Sid": "S3PresignUrlDownload"
+            }
+          ]
+        }
+      }
+    },
+    "LogsLogGroupIotoutofrangetemperature": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FieldIndexPolicies": [],
+        "LogGroupClass": "STANDARD",
+        "LogGroupName": "iot-out-of-range-temperature",
+        "BearerTokenAuthenticationEnabled": false,
+        "DeletionProtectionEnabled": false
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryaction1roledbbtelemetry": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-ddb_telemetry-action-1-role-dbb_telemetry",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Resource": {
+              "Fn::GetAtt": [
+                "DynamoDBTableIoTtelemetry",
+                "Arn"
+              ]
+            },
+            "Action": "dynamodb:PutItem",
+            "Effect": "Allow"
+          }
+        }
+      }
+    },
+    "IoTPolicyGD": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::Policy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/get"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/update"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/shadow/get/accepted"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/get/accepted"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/shadow/update/delta"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/update/delta"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/shadow/update/accepted"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/update/accepted"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/shadow/update/rejected"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/update/rejected"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/shadow/get/rejected"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/shadow/get/rejected"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            }
+          ]
+        },
+        "Tags": [],
+        "PolicyName": "ESP32-Shadow"
+      }
+    },
+    "IoTThingESP32Vlasenko": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::Thing",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributePayload": {},
+        "ThingName": {
+          "Ref": "ThingName"
+        }
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDMeventserroractionroleCloudWatcherrorrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-DynamoDM_events-erroraction-role-CloudWatch-error-role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:iot-errors:*"
+                }
+              ],
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      }
+    },
+    "IAMUserIoTbackend": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::User",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyESP32Vlasenkobackendpolicy"
+          }
+        ],
+        "UserName": "IoT_backend"
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureerroractionroleCloudWatcherrorrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-out_of_range_temperature-erroraction-role-CloudWatch-error-role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:iot-errors:*"
+                }
+              ],
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureaction1roleiotcloudwatchrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-out_of_range_temperature-action-1-role-iot_cloudwatch_role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:iot-out-of-range-temperature:*"
+                }
+              ],
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      }
+    },
+    "IAMRoleIotdynamodbeventsrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventsaction1roleiotdynamodbeventsrole"
+          }
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "iot-dynamodb-events-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "S3BucketEsp32otavlasenko": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AbacStatus": "Disabled",
+        "PublicAccessBlockConfiguration": {
+          "RestrictPublicBuckets": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "BlockPublicAcls": true
+        },
+        "BucketName": {
+          "Ref": "FirmwareBucketName"
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": true,
+              "BlockedEncryptionTypes": {
+                "EncryptionType": [
+                  "SSE-C"
+                ]
+              },
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DynamoDBTableIoTEvents": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "SSESpecification": {
+          "SSEEnabled": false
+        },
+        "TableName": "IoT_Events",
+        "AttributeDefinitions": [
+          {
+            "AttributeType": "S",
+            "AttributeName": "device_id"
+          },
+          {
+            "AttributeType": "N",
+            "AttributeName": "received_at"
+          }
+        ],
+        "ContributorInsightsSpecification": {
+          "Enabled": false
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": false
+        },
+        "KeySchema": [
+          {
+            "KeyType": "HASH",
+            "AttributeName": "device_id"
+          },
+          {
+            "KeyType": "RANGE",
+            "AttributeName": "received_at"
+          }
+        ],
+        "DeletionProtectionEnabled": false,
+        "TableClass": "STANDARD",
+        "Tags": []
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventsaction1roleiotdynamodbeventsrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-DynamoDB_events-action-1-role-iot-dynamodb-events-role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Resource": {
+              "Fn::GetAtt": [
+                "DynamoDBTableIoTEvents",
+                "Arn"
+              ]
+            },
+            "Action": "dynamodb:PutItem",
+            "Effect": "Allow"
+          }
+        }
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventserroractionroleiotcloudwatchrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-DynamoDB_events-erroraction-role-iot_cloudwatch_role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:iot-errors:*"
+                }
+              ],
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      }
+    },
+    "IoTPolicy": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::Policy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/jobs/notify-next"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/$aws/things/${ThingName}/jobs/$next/get/accepted"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/jobs/notify-next"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/jobs/$next/get/accepted"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/jobs/$next/get"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/$aws/things/${ThingName}/jobs/*/update"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            }
+          ]
+        },
+        "Tags": [],
+        "PolicyName": "ESP32-Jobs"
+      }
+    },
+    "IAMRoleIotcloudwatchrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventserroractionroleiotcloudwatchrole"
+          },
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureaction1roleiotcloudwatchrole"
+          }
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "iot_cloudwatch_role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryerroractionroleCloudWatcherrorrole": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-rule-ddb_telemetry-erroraction-role-CloudWatch-error-role",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:iot-errors:*"
+                }
+              ],
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      }
+    },
+    "IoTTopicRuleDynamoDBevents": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::TopicRule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RuleName": "DynamoDB_events",
+        "Tags": [],
+        "TopicRulePayload": {
+          "RuleDisabled": false,
+          "ErrorAction": {
+            "CloudwatchLogs": {
+              "BatchMode": false,
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "IAMRoleIotcloudwatchrole",
+                  "Arn"
+                ]
+              },
+              "LogGroupName": {
+                "Ref": "LogsLogGroupIoterrors"
+              }
+            }
+          },
+          "Description": "",
+          "AwsIotSqlVersion": "2016-03-23",
+          "Actions": [
+            {
+              "DynamoDBv2": {
+                "PutItem": {
+                  "TableName": {
+                    "Ref": "DynamoDBTableIoTEvents"
+                  }
+                },
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "IAMRoleIotdynamodbeventsrole",
+                    "Arn"
+                  ]
+                }
+              }
+            }
+          ],
+          "Sql": {
+            "Fn::Sub": "SELECT *,\r\n       timestamp() AS received_at,\r\n       clientid()  AS client_id,\r\n       topic(2)    AS student\r\nFROM '${TopicPrefix}/events'"
+          }
+        }
+      },
+      "DependsOn": [
+        "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventsaction1roleiotdynamodbeventsrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventserroractionroleiotcloudwatchrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureaction1roleiotcloudwatchrole"
+      ]
+    },
+    "IAMRoleDbbtelemetry": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryaction1roledbbtelemetry"
+          }
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "dbb_telemetry",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "IAMManagedPolicyPolicyserviceroleawsiotroles3GetObjectVersion1790850083401": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ManagedPolicyName": "aws-iot-role-s3GetObjectVersion_1790850083401",
+        "Path": "/service-role/",
+        "Description": "",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Condition": {
+                "StringEquals": {
+                  "s3:ResourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::${FirmwareBucketName}/*"
+                }
+              ],
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Effect": "Allow",
+              "Sid": "S3GetObjects"
+            }
+          ]
+        }
+      }
+    },
+    "IoTTopicRuleOutofrangetemperature": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::TopicRule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RuleName": "out_of_range_temperature",
+        "Tags": [],
+        "TopicRulePayload": {
+          "RuleDisabled": false,
+          "ErrorAction": {
+            "CloudwatchLogs": {
+              "BatchMode": false,
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "IAMRoleCloudWatcherrorrole",
+                  "Arn"
+                ]
+              },
+              "LogGroupName": {
+                "Ref": "LogsLogGroupIoterrors"
+              }
+            }
+          },
+          "Description": "",
+          "AwsIotSqlVersion": "2016-03-23",
+          "Actions": [
+            {
+              "CloudwatchLogs": {
+                "BatchMode": false,
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "IAMRoleIotcloudwatchrole",
+                    "Arn"
+                  ]
+                },
+                "LogGroupName": {
+                  "Ref": "LogsLogGroupIotoutofrangetemperature"
+                }
+              }
+            }
+          ],
+          "Sql": {
+            "Fn::Sub": "SELECT *, timestamp() AS received_at, clientid() AS client_id, topic(2) AS student FROM '${TopicPrefix}/telemetry' WHERE temperature > 28 OR temperature < 15"
+          }
+        }
+      },
+      "DependsOn": [
+        "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDBeventserroractionroleiotcloudwatchrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDMeventserroractionroleCloudWatcherrorrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryerroractionroleCloudWatcherrorrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureaction1roleiotcloudwatchrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureerroractionroleCloudWatcherrorrole"
+      ]
+    },
+    "LogsLogGroupIoterrors": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FieldIndexPolicies": [],
+        "LogGroupClass": "STANDARD",
+        "LogGroupName": "iot-errors",
+        "BearerTokenAuthenticationEnabled": false,
+        "DeletionProtectionEnabled": false
+      }
+    },
+    "DynamoDBTableIoTtelemetry": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "SSESpecification": {
+          "SSEEnabled": false
+        },
+        "TableName": "IoT_telemetry",
+        "AttributeDefinitions": [
+          {
+            "AttributeType": "S",
+            "AttributeName": "device_id"
+          },
+          {
+            "AttributeType": "N",
+            "AttributeName": "received_at"
+          }
+        ],
+        "ContributorInsightsSpecification": {
+          "Enabled": false
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": false
+        },
+        "KeySchema": [
+          {
+            "KeyType": "HASH",
+            "AttributeName": "device_id"
+          },
+          {
+            "KeyType": "RANGE",
+            "AttributeName": "received_at"
+          }
+        ],
+        "DeletionProtectionEnabled": false,
+        "TableClass": "STANDARD",
+        "Tags": []
+      }
+    },
+    "IoTPolicyQZ": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::Policy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/${TopicPrefix}/telemetry"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/${TopicPrefix}/events"
+              },
+              "Action": "iot:Publish",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:client/${ThingName}"
+              },
+              "Action": "iot:Connect",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topicfilter/${TopicPrefix}/commands/led"
+              },
+              "Action": "iot:Subscribe",
+              "Effect": "Allow"
+            },
+            {
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iot:${AWS::Region}:${AWS::AccountId}:topic/${TopicPrefix}/commands/led"
+              },
+              "Action": "iot:Receive",
+              "Effect": "Allow"
+            }
+          ]
+        },
+        "Tags": [],
+        "PolicyName": "ESP32-telemetry-and-comands"
+      }
+    },
+    "IoTTopicRuleDdbtelemetry": {
+      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::IoT::TopicRule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RuleName": "ddb_telemetry",
+        "Tags": [],
+        "TopicRulePayload": {
+          "RuleDisabled": false,
+          "ErrorAction": {
+            "CloudwatchLogs": {
+              "BatchMode": false,
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "IAMRoleCloudWatcherrorrole",
+                  "Arn"
+                ]
+              },
+              "LogGroupName": {
+                "Ref": "LogsLogGroupIoterrors"
+              }
+            }
+          },
+          "Description": "",
+          "AwsIotSqlVersion": "2016-03-23",
+          "Actions": [
+            {
+              "DynamoDBv2": {
+                "PutItem": {
+                  "TableName": {
+                    "Ref": "DynamoDBTableIoTtelemetry"
+                  }
+                },
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "IAMRoleDbbtelemetry",
+                    "Arn"
+                  ]
+                }
+              }
+            }
+          ],
+          "Sql": {
+            "Fn::Sub": "SELECT *,\r\n       timestamp() AS received_at,\r\n       clientid()  AS client_id,\r\n       topic(2)    AS student\r\nFROM '${TopicPrefix}/telemetry'"
+          }
+        }
+      },
+      "DependsOn": [
+        "IAMManagedPolicyPolicyserviceroleawsiotruleDynamoDMeventserroractionroleCloudWatcherrorrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryaction1roledbbtelemetry",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleddbtelemetryerroractionroleCloudWatcherrorrole",
+        "IAMManagedPolicyPolicyserviceroleawsiotruleoutofrangetemperatureerroractionroleCloudWatcherrorrole"
+      ]
+    }
+  },
+  "Parameters": {
+    "ThingName": {
+      "Type": "String",
+      "Default": "ESP32-Vlasenko",
+      "Description": "IoT Thing name; use the same value in ESP32 THINGNAME and backend DEVICE_ID."
+    },
+    "TopicPrefix": {
+      "Type": "String",
+      "Default": "iot-course/vlasenko",
+      "Description": "MQTT topic prefix without a trailing slash; also configure it in ESP32 and backend."
+    },
+    "FirmwareBucketName": {
+      "Type": "String",
+      "Description": "Globally unique S3 bucket name for OTA firmware (lowercase)."
+    }
+  },
+  "Outputs": {
+    "ThingName": {
+      "Value": {
+        "Ref": "ThingName"
+      }
+    },
+    "TelemetryTableName": {
+      "Value": {
+        "Ref": "DynamoDBTableIoTtelemetry"
+      }
+    },
+    "EventsTableName": {
+      "Value": {
+        "Ref": "DynamoDBTableIoTEvents"
+      }
+    },
+    "FirmwareBucketName": {
+      "Value": {
+        "Ref": "FirmwareBucketName"
+      }
+    },
+    "OtaRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IAMRoleOta",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

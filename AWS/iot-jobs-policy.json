@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/jobs/notify-next",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topicfilter/$aws/things/ESP32-Vlasenko/jobs/$next/get/accepted",
+      "Action": "iot:Subscribe",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/jobs/notify-next",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/jobs/$next/get/accepted",
+      "Action": "iot:Receive",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/jobs/$next/get",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    },
+    {
+      "Resource": "arn:aws:iot:eu-north-1:YOUR_ACCOUNT_ID:topic/$aws/things/ESP32-Vlasenko/jobs/*/update",
+      "Action": "iot:Publish",
+      "Effect": "Allow"
+    }
+  ]
+}
